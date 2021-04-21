@@ -1,12 +1,63 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace linq
 {
-    class Program
+    public class BankReport
+  {
+    public string BankName { get; set; }
+
+    public int Customers { get; set; }
+  }
+  public class Customer
+  {
+    public string Name { get; set; }
+    public double Balance { get; set; }
+    public string Bank { get; set; }
+  }
+
+  public class Program
+  {
+    public static void Main()
     {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Hello World!");
-        }
+      List<Customer> customers = new List<Customer>() {
+            new Customer(){ Name="Bob Lesman", Balance=80345.66, Bank="FTB"},
+            new Customer(){ Name="Joe Landy", Balance=9284756.21, Bank="WF"},
+            new Customer(){ Name="Meg Ford", Balance=487233.01, Bank="BOA"},
+            new Customer(){ Name="Peg Vale", Balance=7001449.92, Bank="BOA"},
+            new Customer(){ Name="Mike Johnson", Balance=790872.12, Bank="WF"},
+            new Customer(){ Name="Les Paul", Balance=8374892.54, Bank="WF"},
+            new Customer(){ Name="Sid Crosby", Balance=957436.39, Bank="FTB"},
+            new Customer(){ Name="Sarah Ng", Balance=56562389.85, Bank="FTB"},
+            new Customer(){ Name="Tina Fey", Balance=1000000.00, Bank="CITI"},
+            new Customer(){ Name="Sid Brown", Balance=49582.68, Bank="CITI"}
+        };
+      // Build a collection of customers who are millionaires
+      IEnumerable<Customer> millionairesClub = customers.Where(customer => customer.Balance > 999999);
+      /*
+        Given the same customer set, display how many millionaires per bank.
+        Ref: https://stackoverflow.com/questions/7325278/group-by-in-linq
+
+        Example Output:
+        WF 2
+        BOA 1
+        FTB 1
+        CITI 1
+      */
+      List<BankReport> aspiringBillionaires = (from customer in millionairesClub
+      //dealing with kids list
+        group customer by customer.Bank into bankGroup
+     //now dealing with neighborhoodGroup list
+        select new BankReport {
+            BankName = bankGroup.Key, 
+            Customers = bankGroup.Count()
+        }).OrderByDescending(sr => sr.Customers).ToList();
+
+      foreach(BankReport c in aspiringBillionaires)
+      {
+          Console.WriteLine($"{c.BankName}, {c.Customers}");
+      }
     }
+  }
 }
